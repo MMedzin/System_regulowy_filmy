@@ -2,7 +2,17 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="polecanie_filmow_SI/src/main/java"/>
+	<classpathentry kind="src" path="polecanie_filmow_SI/src/main/lib/"/>
+	<classpathentry kind="src" path="polecanie_filmow_SI/src/main/resources"/>
 	<classpathentry kind="output" path="polecanie_filmow_SI/target/classes"/>
 	<classpathentry kind="con" path="DROOLS/Drools"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="polecanie_filmow_SI/src/main/lib/javafx.base.jar"/>
+	<classpathentry kind="lib" path="polecanie_filmow_SI/src/main/lib/javafx.controls.jar"/>
+	<classpathentry kind="lib" path="polecanie_filmow_SI/src/main/lib/javafx.fxml.jar"/>
+	<classpathentry kind="lib" path="polecanie_filmow_SI/src/main/lib/javafx.graphics.jar"/>
+	<classpathentry kind="lib" path="polecanie_filmow_SI/src/main/lib/javafx.media.jar"/>
+	<classpathentry kind="lib" path="polecanie_filmow_SI/src/main/lib/javafx.swing.jar"/>
+	<classpathentry kind="lib" path="polecanie_filmow_SI/src/main/lib/javafx.web.jar"/>
+	<classpathentry kind="lib" path="polecanie_filmow_SI/src/main/lib/javafx-swt.jar"/>
 </classpath>

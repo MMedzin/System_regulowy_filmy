@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" path="src/main/lib/"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -9,13 +10,13 @@
 	</classpathentry>
 	<classpathentry kind="con" path="DROOLS/Drools"/>
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/michal/Apps/Java-libs/javafx-sdk-11.0.2/lib/javafx.base.jar"/>
-	<classpathentry kind="lib" path="/home/michal/Apps/Java-libs/javafx-sdk-11.0.2/lib/javafx.controls.jar"/>
-	<classpathentry kind="lib" path="/home/michal/Apps/Java-libs/javafx-sdk-11.0.2/lib/javafx.fxml.jar"/>
-	<classpathentry kind="lib" path="/home/michal/Apps/Java-libs/javafx-sdk-11.0.2/lib/javafx.graphics.jar"/>
-	<classpathentry kind="lib" path="/home/michal/Apps/Java-libs/javafx-sdk-11.0.2/lib/javafx.media.jar"/>
-	<classpathentry kind="lib" path="/home/michal/Apps/Java-libs/javafx-sdk-11.0.2/lib/javafx.swing.jar"/>
-	<classpathentry kind="lib" path="/home/michal/Apps/Java-libs/javafx-sdk-11.0.2/lib/javafx.web.jar"/>
-	<classpathentry kind="lib" path="/home/michal/Apps/Java-libs/javafx-sdk-11.0.2/lib/javafx-swt.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry kind="lib" path="src/main/lib/javafx.base.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/javafx.controls.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/javafx.fxml.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/javafx.graphics.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/javafx.media.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/javafx.swing.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/javafx.web.jar"/>
+	<classpathentry kind="lib" path="src/main/lib/javafx-swt.jar"/>
 </classpath>
