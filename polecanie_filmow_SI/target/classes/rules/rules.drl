@@ -1,0 +1,836 @@
+package com.sample
+import org.kie.api.runtime.KieRuntime
+import java.util.ArrayList
+import java.util.List
+import java.util.Arrays;
+import java.util.ArrayList
+
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.scene.text.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.ToggleGroup;
+import javafx.stage.Stage;
+import javafx.scene.layout.GridPane;
+import javafx.geometry.Insets;
+
+function void wyswietlRezultat(KieRuntime krt, String polecane) {
+      
+    Alert alert = new Alert(AlertType.INFORMATION);
+	alert.setTitle("Wynik");
+	alert.setHeaderText(null);
+	alert.setContentText("Obejrzyj: " +polecane);
+	
+	alert.showAndWait();
+}
+
+function Opcja zapytaj(KieRuntime krt, String trescPytania, ArrayList odpowiedzi) {
+
+   	class OdpListener implements ChangeListener<Boolean>{
+	
+		private String odpowiedz;
+	
+		public OdpListener(String odpowiedz){
+			this.odpowiedz = odpowiedz;
+		}
+	
+    	@Override
+    	public void changed(ObservableValue<? extends Boolean> obs, Boolean wasPreviouslySelected, Boolean isNowSelected) {
+        	if (isNowSelected) { 
+        		Opcja.setOdpowiedz(this.odpowiedz);
+        	}
+        }
+        
+     }
+	
+	GridPane grid = new GridPane();
+	grid.setHgap(10);
+	grid.setVgap(10);
+	grid.setPadding(new Insets(20, 150, 10, 10));
+
+    ArrayList < RadioButton > listaButtonow = new ArrayList < > ();
+
+    for (int i = 0; i < odpowiedzi.size(); i++) {
+        String text = (String) odpowiedzi.get(i);
+        RadioButton nowy = new RadioButton(text);
+        nowy.selectedProperty().addListener(new OdpListener(text));
+        listaButtonow.add(nowy);
+    }
+
+    listaButtonow.get(0).setSelected(true);
+    Opcja.setPytanie(trescPytania);
+    Opcja.setOdpowiedz((String) odpowiedzi.get(0));
+
+    ToggleGroup group = new ToggleGroup();
+    for (int i = 0; i < listaButtonow.size(); i++) {
+        listaButtonow.get(i).setToggleGroup(group);
+        grid.add(listaButtonow.get(i), 0, i);
+    }
+    
+    
+    Alert alert = new Alert(AlertType.INFORMATION);
+    
+    alert.setTitle("Quetion");
+	alert.setHeaderText(trescPytania);
+    
+    alert.getDialogPane().setContent(grid);
+    alert.showAndWait();
+
+    return new Opcja();
+}
+
+rule "STARTING QUESTION: What genre would you like to watch?"
+    when
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("SciFi");
+    warianty.add("Horror");
+    warianty.add("Slipstream");
+    warianty.add("Fantasy");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "What genre would you like to watch?", warianty);
+    insert (odpowiedz);
+end
+
+rule "What genre would you like to watch?: SciFi: Do you like anhtologies?"
+    when
+    Opcja(pytanie == "What genre would you like to watch?" && odpowiedz == "SciFi")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Do you like anhtologies?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Do you like anhtologies?: Yes: The Outer Limits"
+    when
+    Opcja(pytanie == "Do you like anhtologies?" && odpowiedz == "Yes")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "The Outer Limits");
+end
+
+
+rule "Do you like anhtologies?: No: Space Opera or close to home?"
+    when
+    Opcja(pytanie == "Do you like anhtologies?" && odpowiedz == "No")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Stars");
+    warianty.add("Home");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Space Opera or close to home?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Space Opera or close to home?: Stars: Do you like comedy?"
+    when
+    Opcja(pytanie == "Space Opera or close to home?" && odpowiedz == "Stars")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Do you like comedy?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Do you like comedy?: Yes: British or American comedy?"
+    when
+    Opcja(pytanie == "Do you like comedy?" && odpowiedz == "Yes")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("British");
+    warianty.add("American");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "British or American comedy?", warianty);
+    insert (odpowiedz);
+end
+
+rule "British or American comedy?: British: Red Dware"
+    when
+    Opcja(pytanie == "British or American comedy?" && odpowiedz == "British")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Red Dware");
+end
+
+
+rule "British or American comedy?: American: Futurama"
+    when
+    Opcja(pytanie == "British or American comedy?" && odpowiedz == "American")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Futurama");
+end
+
+
+rule "Do you like comedy?: No: How about trekkie?"
+    when
+    Opcja(pytanie == "Do you like comedy?" && odpowiedz == "No")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "How about trekkie?", warianty);
+    insert (odpowiedz);
+end
+
+rule "How about trekkie?: Yes: Will Wheaton?"
+    when
+    Opcja(pytanie == "How about trekkie?" && odpowiedz == "Yes")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yeees!");
+    warianty.add("NOOO!");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Will Wheaton?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Will Wheaton?: Yeees!: Star Trek:The Next Generation"
+    when
+    Opcja(pytanie == "Will Wheaton?" && odpowiedz == "Yeees!")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Star Trek:The Next Generation");
+end
+
+
+rule "Will Wheaton?: NOOO!: What do you study?"
+    when
+    Opcja(pytanie == "Will Wheaton?" && odpowiedz == "NOOO!")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Poli");
+    warianty.add("Womens Lib");
+    warianty.add("Sociology");
+    warianty.add("History");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "What do you study?", warianty);
+    insert (odpowiedz);
+end
+
+rule "What do you study?: Poli: sci"
+    when
+    Opcja(pytanie == "What do you study?" && odpowiedz == "Poli")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "sci");
+end
+
+
+rule "What do you study?: Womens Lib: Star Trek: Voyager"
+    when
+    Opcja(pytanie == "What do you study?" && odpowiedz == "Womens Lib")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Star Trek: Voyager");
+end
+
+
+rule "What do you study?: Sociology: Star Trek: The Animated Series"
+    when
+    Opcja(pytanie == "What do you study?" && odpowiedz == "Sociology")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Star Trek: The Animated Series");
+end
+
+
+rule "What do you study?: History: Star Trek: Enterprise"
+    when
+    Opcja(pytanie == "What do you study?" && odpowiedz == "History")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Star Trek: Enterprise");
+end
+
+
+rule "How about trekkie?: No: Do you like westerns?"
+    when
+    Opcja(pytanie == "How about trekkie?" && odpowiedz == "No")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Do you like westerns?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Do you like westerns?: Yes: Firefly"
+    when
+    Opcja(pytanie == "Do you like westerns?" && odpowiedz == "Yes")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Firefly");
+end
+
+
+rule "Do you like westerns?: No: How about Time/Space Gateways?"
+    when
+    Opcja(pytanie == "Do you like westerns?" && odpowiedz == "No")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "How about Time/Space Gateways?", warianty);
+    insert (odpowiedz);
+end
+
+rule "How about Time/Space Gateways?: Yes: British or American?"
+    when
+    Opcja(pytanie == "How about Time/Space Gateways?" && odpowiedz == "Yes")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("British");
+    warianty.add("American");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "British or American?", warianty);
+    insert (odpowiedz);
+end
+
+rule "British or American?: British: Doctor Who: The Complete First Series"
+    when
+    Opcja(pytanie == "British or American?" && odpowiedz == "British")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Doctor Who: The Complete First Series");
+end
+
+
+rule "British or American?: American: Stargate"
+    when
+    Opcja(pytanie == "British or American?" && odpowiedz == "American")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Stargate");
+end
+
+
+rule "How about Time/Space Gateways?: No: Classic or Modern?"
+    when
+    Opcja(pytanie == "How about Time/Space Gateways?" && odpowiedz == "No")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Classic");
+    warianty.add("Modern");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Classic or Modern?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Classic or Modern?: Classic: Battlestar Galactica"
+    when
+    Opcja(pytanie == "Classic or Modern?" && odpowiedz == "Classic")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Battlestar Galactica");
+end
+
+
+rule "Classic or Modern?: Modern: Battestar Galactica"
+    when
+    Opcja(pytanie == "Classic or Modern?" && odpowiedz == "Modern")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Battestar Galactica");
+end
+
+
+rule "Space Opera or close to home?: Home: Friendlies or Invaders?"
+    when
+    Opcja(pytanie == "Space Opera or close to home?" && odpowiedz == "Home")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Friends");
+    warianty.add("Invaders");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Friendlies or Invaders?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Friendlies or Invaders?: Friends: Alien Nation"
+    when
+    Opcja(pytanie == "Friendlies or Invaders?" && odpowiedz == "Friends")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Alien Nation");
+end
+
+
+rule "Friendlies or Invaders?: Invaders: Animation or Live Action?"
+    when
+    Opcja(pytanie == "Friendlies or Invaders?" && odpowiedz == "Invaders")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Animation");
+    warianty.add("Live Action");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Animation or Live Action?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Animation or Live Action?: Animation: Invader Zim"
+    when
+    Opcja(pytanie == "Animation or Live Action?" && odpowiedz == "Animation")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Invader Zim");
+end
+
+
+rule "Animation or Live Action?: Live Action: V"
+    when
+    Opcja(pytanie == "Animation or Live Action?" && odpowiedz == "Live Action")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "V");
+end
+
+
+rule "What genre would you like to watch?: Horror: Vampires or Zombies?"
+    when
+    Opcja(pytanie == "What genre would you like to watch?" && odpowiedz == "Horror")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Vampires");
+    warianty.add("Zombies");
+    warianty.add("Neither");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Vampires or Zombies?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Vampires or Zombies?: Vampires: How old are you?"
+    when
+    Opcja(pytanie == "Vampires or Zombies?" && odpowiedz == "Vampires")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add(">16");
+    warianty.add("<16");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "How old are you?", warianty);
+    insert (odpowiedz);
+end
+
+rule "How old are you?: >16: SFW or NSFW?"
+    when
+    Opcja(pytanie == "How old are you?" && odpowiedz == ">16")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("SFW");
+    warianty.add("NSFW");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "SFW or NSFW?", warianty);
+    insert (odpowiedz);
+end
+
+rule "SFW or NSFW?: SFW: Have you seen Buffy?"
+    when
+    Opcja(pytanie == "SFW or NSFW?" && odpowiedz == "SFW")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Have you seen Buffy?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Have you seen Buffy?: Yes: Angel"
+    when
+    Opcja(pytanie == "Have you seen Buffy?" && odpowiedz == "Yes")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Angel");
+end
+
+
+rule "Have you seen Buffy?: No: Buffy"
+    when
+    Opcja(pytanie == "Have you seen Buffy?" && odpowiedz == "No")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Buffy");
+end
+
+
+rule "SFW or NSFW?: NSFW: British or American NSFW?"
+    when
+    Opcja(pytanie == "SFW or NSFW?" && odpowiedz == "NSFW")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("British");
+    warianty.add("American");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "British or American NSFW?", warianty);
+    insert (odpowiedz);
+end
+
+rule "British or American NSFW?: British: being human"
+    when
+    Opcja(pytanie == "British or American NSFW?" && odpowiedz == "British")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "being human");
+end
+
+
+rule "British or American NSFW?: American: True Blood"
+    when
+    Opcja(pytanie == "British or American NSFW?" && odpowiedz == "American")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "True Blood");
+end
+
+
+rule "How old are you?: <16: Vampire Diaries"
+    when
+    Opcja(pytanie == "How old are you?" && odpowiedz == "<16")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Vampire Diaries");
+end
+
+
+rule "Vampires or Zombies?: Zombies: The Walking Dead"
+    when
+    Opcja(pytanie == "Vampires or Zombies?" && odpowiedz == "Zombies")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "The Walking Dead");
+end
+
+
+rule "Vampires or Zombies?: Neither: How do you feel about anthologies?"
+    when
+    Opcja(pytanie == "Vampires or Zombies?" && odpowiedz == "Neither")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Ok");
+    warianty.add("I don't like them");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "How do you feel about anthologies?", warianty);
+    insert (odpowiedz);
+end
+
+rule "How do you feel about anthologies?: Ok: Psychological or Gory?"
+    when
+    Opcja(pytanie == "How do you feel about anthologies?" && odpowiedz == "Ok")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Psychological");
+    warianty.add("Gory");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Psychological or Gory?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Psychological or Gory?: Psychological: The Twilight Zone"
+    when
+    Opcja(pytanie == "Psychological or Gory?" && odpowiedz == "Psychological")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "The Twilight Zone");
+end
+
+
+rule "Psychological or Gory?: Gory: Tales From The Crypt"
+    when
+    Opcja(pytanie == "Psychological or Gory?" && odpowiedz == "Gory")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Tales From The Crypt");
+end
+
+
+rule "How do you feel about anthologies?: I don't like them: Charmed"
+    when
+    Opcja(pytanie == "How do you feel about anthologies?" && odpowiedz == "I don't like them")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Charmed");
+end
+
+
+rule "What genre would you like to watch?: Slipstream: Action or Drama?"
+    when
+    Opcja(pytanie == "What genre would you like to watch?" && odpowiedz == "Slipstream")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Action");
+    warianty.add("Drama");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Action or Drama?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Action or Drama?: Action: Biopunk or Steampunk?"
+    when
+    Opcja(pytanie == "Action or Drama?" && odpowiedz == "Action")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Biopunk");
+    warianty.add("Steampunk");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Biopunk or Steampunk?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Biopunk or Steampunk?: Biopunk: Whedon or Cameron?"
+    when
+    Opcja(pytanie == "Biopunk or Steampunk?" && odpowiedz == "Biopunk")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Whedon");
+    warianty.add("Cameron");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Whedon or Cameron?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Whedon or Cameron?: Whedon: Dollhouse"
+    when
+    Opcja(pytanie == "Whedon or Cameron?" && odpowiedz == "Whedon")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Dollhouse");
+end
+
+
+rule "Whedon or Cameron?: Cameron: Dark Angel"
+    when
+    Opcja(pytanie == "Whedon or Cameron?" && odpowiedz == "Cameron")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Dark Angel");
+end
+
+
+rule "Biopunk or Steampunk?: Steampunk: Sanctuary"
+    when
+    Opcja(pytanie == "Biopunk or Steampunk?" && odpowiedz == "Steampunk")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Sanctuary");
+end
+
+
+rule "Action or Drama?: Drama: Have you seen X"
+    when
+    Opcja(pytanie == "Action or Drama?" && odpowiedz == "Drama")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("No");
+    warianty.add("Hated it");
+    warianty.add("Yes");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Have you seen X", warianty);
+    insert (odpowiedz);
+end
+
+rule "Have you seen X: No: X"
+    when
+    Opcja(pytanie == "Have you seen X" && odpowiedz == "No")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "X");
+end
+
+
+rule "Have you seen X: Hated it: Are you ok with being let down?"
+    when
+    Opcja(pytanie == "Have you seen X" && odpowiedz == "Hated it")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Are you ok with being let down?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Are you ok with being let down?: Yes: Lost 1"
+    when
+    Opcja(pytanie == "Are you ok with being let down?" && odpowiedz == "Yes")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Lost 1");
+end
+
+
+rule "Are you ok with being let down?: No: How do you feel about Scott Bakula?"
+    when
+    Opcja(pytanie == "Are you ok with being let down?" && odpowiedz == "No")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Who?");
+    warianty.add("I'm a fan");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "How do you feel about Scott Bakula?", warianty);
+    insert (odpowiedz);
+end
+
+rule "How do you feel about Scott Bakula?: Who?: Warehouse 13"
+    when
+    Opcja(pytanie == "How do you feel about Scott Bakula?" && odpowiedz == "Who?")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Warehouse 13");
+end
+
+
+rule "How do you feel about Scott Bakula?: I'm a fan: Quantum Leap"
+    when
+    Opcja(pytanie == "How do you feel about Scott Bakula?" && odpowiedz == "I'm a fan")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Quantum Leap");
+end
+
+
+rule "Have you seen X: Yes: Fringe"
+    when
+    Opcja(pytanie == "Have you seen X" && odpowiedz == "Yes")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Fringe");
+end
+
+
+rule "What genre would you like to watch?: Fantasy: Period or Urban?"
+    when
+    Opcja(pytanie == "What genre would you like to watch?" && odpowiedz == "Fantasy")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Period");
+    warianty.add("Urban");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Period or Urban?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Period or Urban?: Period: Myths or Legends?"
+    when
+    Opcja(pytanie == "Period or Urban?" && odpowiedz == "Period")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Myths");
+    warianty.add("Legends");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Myths or Legends?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Myths or Legends?: Myths: Buff Dudes or Hot Girls?"
+    when
+    Opcja(pytanie == "Myths or Legends?" && odpowiedz == "Myths")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Dudes");
+    warianty.add("Girls");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Buff Dudes or Hot Girls?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Buff Dudes or Hot Girls?: Dudes: Hercules"
+    when
+    Opcja(pytanie == "Buff Dudes or Hot Girls?" && odpowiedz == "Dudes")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Hercules");
+end
+
+
+rule "Buff Dudes or Hot Girls?: Girls: Xena"
+    when
+    Opcja(pytanie == "Buff Dudes or Hot Girls?" && odpowiedz == "Girls")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Xena");
+end
+
+
+rule "Myths or Legends?: Legends: Do you prefer Live Action or Animated?"
+    when
+    Opcja(pytanie == "Myths or Legends?" && odpowiedz == "Legends")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Live Action");
+    warianty.add("Animated");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Do you prefer Live Action or Animated?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Do you prefer Live Action or Animated?: Live Action: Do you like lots of nuditity?"
+    when
+    Opcja(pytanie == "Do you prefer Live Action or Animated?" && odpowiedz == "Live Action")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Do you like lots of nuditity?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Do you like lots of nuditity?: Yes: Spartacus"
+    when
+    Opcja(pytanie == "Do you like lots of nuditity?" && odpowiedz == "Yes")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Spartacus");
+end
+
+
+rule "Do you like lots of nuditity?: No: Legend Of The Seeker"
+    when
+    Opcja(pytanie == "Do you like lots of nuditity?" && odpowiedz == "No")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Legend Of The Seeker");
+end
+
+
+rule "Do you prefer Live Action or Animated?: Animated: Do you have a gameboy?"
+    when
+    Opcja(pytanie == "Do you prefer Live Action or Animated?" && odpowiedz == "Animated")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Do you have a gameboy?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Do you have a gameboy?: Yes: Pokemon!"
+    when
+    Opcja(pytanie == "Do you have a gameboy?" && odpowiedz == "Yes")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Pokemon!");
+end
+
+
+rule "Do you have a gameboy?: No: Avatar: The Lat Airbender"
+    when
+    Opcja(pytanie == "Do you have a gameboy?" && odpowiedz == "No")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Avatar: The Lat Airbender");
+end
+
+
+rule "Period or Urban?: Urban: Do you like superheroes?"
+    when
+    Opcja(pytanie == "Period or Urban?" && odpowiedz == "Urban")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes");
+    warianty.add("No");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Do you like superheroes?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Do you like superheroes?: Yes: Ok, but Animated or Live Action?"
+    when
+    Opcja(pytanie == "Do you like superheroes?" && odpowiedz == "Yes")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Animated");
+    warianty.add("Live");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Ok, but Animated or Live Action?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Ok, but Animated or Live Action?: Animated: The Tick"
+    when
+    Opcja(pytanie == "Ok, but Animated or Live Action?" && odpowiedz == "Animated")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "The Tick");
+end
+
+
+rule "Ok, but Animated or Live Action?: Live: Smallville"
+    when
+    Opcja(pytanie == "Ok, but Animated or Live Action?" && odpowiedz == "Live")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Smallville");
+end
+
+
+rule "Do you like superheroes?: No: Ok, what about mythology?"
+    when
+    Opcja(pytanie == "Do you like superheroes?" && odpowiedz == "No")
+    then
+    ArrayList<String> warianty = new ArrayList<>();
+    warianty.add("Yes, why not?");
+    warianty.add("No!");
+    Opcja odpowiedz = zapytaj(kcontext.getKieRuntime(), "Ok, what about mythology?", warianty);
+    insert (odpowiedz);
+end
+
+rule "Ok, what about mythology?: Yes, why not?: Highlader"
+    when
+    Opcja(pytanie == "Ok, what about mythology?" && odpowiedz == "Yes, why not?")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Highlader");
+end
+
+
+rule "Ok, what about mythology?: No!: Dresden"
+    when
+    Opcja(pytanie == "Ok, what about mythology?" && odpowiedz == "No!")
+    then
+    wyswietlRezultat(kcontext.getKieRuntime(), "Dresden");
+end
+
