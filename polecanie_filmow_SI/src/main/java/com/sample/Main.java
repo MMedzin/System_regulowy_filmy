@@ -4,12 +4,10 @@ import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
+import java.lang.Exception;
+
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.control.RadioButton;
 
 
 public class Main extends Application {
@@ -22,7 +20,9 @@ public class Main extends Application {
     	    KieContainer kContainer = k.getKieClasspathContainer();
         	KieSession kSession = kContainer.newKieSession("ksession-rules");
 
-            kSession.fireAllRules();
+            try {
+            	kSession.fireAllRules();
+            } catch (Exception ie) {}
         } catch (Throwable t) {
             t.printStackTrace();
             
