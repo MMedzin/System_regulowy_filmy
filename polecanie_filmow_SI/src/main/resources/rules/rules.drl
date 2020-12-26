@@ -99,6 +99,8 @@ function Opcja zapytaj(KieRuntime krt, String trescPytania, ArrayList odpowiedzi
     	Opcja.setOdpowiedz("Koniec");
     }
 
+    alert.close();
+
     return new Opcja();
 }
 
