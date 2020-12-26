@@ -11,5 +11,5 @@
 1. Rozwijamy folder projektu w eclipse i klikamy PPM na klasę src/main/Java/com.sample/Main.java.
 2. Z menu kontekstowego wybieramy 'Run As' > 'Run Configurations...'.
 3. Z listy wybieramy 'Java Application', a następnie klikamy 'New launch configuration'.
-4. W zakładce 'Arguments' w polu 'VM arguments' umieszczamy : '--module-path src/main/lib/javafx-sdk-11.0.2/lib --add-modules=javafx.controls,javafx.fxml'.
+4. W zakładce 'Arguments' w polu 'VM arguments' umieszczamy odpowiednio dla systemów Linux: '--module-path src/main/lib/linux/javafx-sdk-11.0.2/lib --add-modules=javafx.controls,javafx.fxml' oraz dla systemów Windows: '--module-path src\main\lib\windows\javafx-sdk-11.0.2\lib --add-modules=javafx.controls,javafx.fxml'
 5. Klikamy 'Apply'.
